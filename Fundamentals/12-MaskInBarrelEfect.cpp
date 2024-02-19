@@ -26,11 +26,11 @@ using namespace cv;
 class PixelPosition
 {
     private:
-            int x;
-            int y;
-            bool xDirection;
-            bool yDirection;
-            bool inColor;
+        int x;
+        int y;
+        bool xDirection;
+        bool yDirection;
+        bool inColor;
     public:
         // Constructor
         PixelPosition(int xCoord, int yCoord) : x(xCoord), y(yCoord) {}
@@ -43,6 +43,7 @@ class PixelPosition
         void setY(int setY) { y = setY; }
         void setDirectionX() {xDirection = true; inColor = true;}
         void setDirectionY() {yDirection = true; }
+        void toogleColor() { inColor = !inColor; }
         bool toogleDirection(int radius, Mat& src)
         {
             // If the mask touch any image limit, change its direction
@@ -59,9 +60,8 @@ class PixelPosition
 
 /* Function prototypes */
 void muDrawACircleMask(Mat& src, int radius, int line, int color, PixelPosition& maskPixelOrigin);
-void muCreateMask(const Mat& imgSrc, const Mat& imgMask, Mat& imgResult);
+void muCreateMask(const Mat& imgSrc, const Mat& imgMask, Mat& imgResult, PixelPosition& maskStatus);
 void muClearMask(Mat& mask);
-//void
 void getImageData(Mat& imgSource);
 
 int main(void)
@@ -86,7 +86,7 @@ int main(void)
     PixelPosition maskPixelOrigin(50,50);
     int radius = 45;
     int areaFilling = -1;
-    int updateFrame_ms = 10;
+    int updateFrame_ms = 1;
     int maskColor = 255;
 
     imgOutput = Mat(imgInput.rows, imgInput.cols, imgInput.type(), Scalar{0,0,0});
@@ -101,7 +101,7 @@ int main(void)
     while(waitKey(updateFrame_ms))
     {
         muDrawACircleMask(mask, radius, areaFilling, maskColor, maskPixelOrigin);
-        muCreateMask(imgInput, mask, imgOutput);
+        muCreateMask(imgInput, mask, imgOutput, maskPixelOrigin);
 
         imshow("Barrel effect", imgOutput);
 
@@ -115,41 +115,40 @@ int main(void)
 void muDrawACircleMask(Mat& src, int radius, int line, int color, PixelPosition& maskPixelOrigin)
 {
     maskPixelOrigin.toogleDirection(radius, src);
-//    if(maskPixelOrigin.getInColor())
-//    {
-//        Mat imgGrayOutput;
-//        cv::cvtColor(src, imgGrayOutput, cv::COLOR_BGR2GRAY);
-//        circle(imgGrayOutput,
-//           Point(maskPixelOrigin.getX(), maskPixelOrigin.getY()),
-//           radius,
-//           color,
-//           line,
-//           LINE_AA,
-//           0
-//           );
-//    }
-//    else
-//    {
-        circle(src,
-               Point(maskPixelOrigin.getX(), maskPixelOrigin.getY()),
-               radius,
-               color,
-               line,
-               LINE_AA,
-               0
-               );
-//    }
+    circle(src,
+           Point(maskPixelOrigin.getX(), maskPixelOrigin.getY()),
+           radius,
+           color,
+           line,
+           LINE_AA,
+           0
+           );
 }
 
 // Function to create a mask over an image
-void muCreateMask(const Mat& imgSrc, const Mat& imgMask, Mat& imgResult)
+void muCreateMask(const Mat& imgSrc, const Mat& imgMask, Mat& imgResult, PixelPosition& maskStatus)
 {
-    for(int row=0; row<imgSrc.rows; row++)
+    if(maskStatus.getInColor())
+    {
+        for(int row=0; row<imgSrc.rows; row++)
         for(int col=0; col<imgSrc.cols; col++)
             if (imgMask.at<uchar>(row, col) == 255)
                 imgResult.at<Vec3b>(row, col) = imgSrc.at<Vec3b>(row, col);
             else
                 imgResult.at<Vec3b>(row, col) = {0,0,0};
+    }
+    else
+
+    {
+        Mat imgGrayOutput;
+        cv::cvtColor(imgSrc, imgGrayOutput, cv::COLOR_BGR2GRAY);
+        for(int row=0; row<imgSrc.rows; row++)
+        for(int col=0; col<imgSrc.cols; col++)
+            if (imgMask.at<uchar>(row, col) == 255)
+                imgResult.at<Vec3b>(row, col) = imgGrayOutput.at<uchar>(row, col);
+            else
+                imgResult.at<Vec3b>(row, col) = {0,0,0};
+    }
 }
 
 // Function to clear a mask
