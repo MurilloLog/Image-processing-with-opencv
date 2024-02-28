@@ -27,10 +27,10 @@ int main(void)
 
     Mat Input, Output;
 
-    //string src = "../cvImages/ImageTest.png"; // Color image
-    string src = "../cvImages/cameraman.tif"; // BW image
+    string src = "../cvImages/ImageTest.png"; // Color image
+//    string src = "../cvImages/cameraman.tif"; // BW image
 
-    Input = imread(src);
+    Input = imread(src, IMREAD_UNCHANGED);
 
     if (Input.empty())
     {
@@ -45,6 +45,10 @@ int main(void)
     // Applying and showing the negative image
     muApplyImageNegative(Output);
 	imshow("Negative image", Output);
+
+	// Applying and showing the negative image using OpenCV
+    bitwise_not(Input, Output);
+	imshow("OpenCV - Negative image", Output);
 
     waitKey(0);
     return true;
