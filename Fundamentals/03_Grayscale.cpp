@@ -1,5 +1,5 @@
 /*
-    Grayscale images
+    Gray scale images
     Author: @Murillo.log
     Date: March 2024
 
@@ -18,6 +18,7 @@ using namespace cv;
 void muGetImageData(Mat& input);
 void muCreateImage8UC1(Mat& input, Mat& output);
 void muIntensityGrayscale(Mat& input, Mat& output);
+void muLuminanceGrayscale(Mat& input, Mat& output);
 
 int main(void)
 {
@@ -42,6 +43,11 @@ int main(void)
     // Applying grayscale using the Intensity algorithm
     muIntensityGrayscale(Input, Output);
     imshow("Intensity algorithm", Output);
+    muGetImageData(Output);
+
+    // Applying grayscale using the Luminance algorithm
+    muLuminanceGrayscale(Input, Output);
+    imshow("Luminance algorithm", Output);
     muGetImageData(Output);
 
     waitKey(0);
@@ -96,4 +102,17 @@ void muIntensityGrayscale(Mat& input, Mat& output)
                         grayMean += input.at<Vec3b>(rows, cols)[channel];
             output.at<uchar>(rows, cols) = grayMean/input.channels();
         }
+}
+
+
+/* LUMINANCE: Color to Grayscale Algorithm
+ * Function to apply grayscale by calculating the luminance (0.3R+0.59G+0.11B) of all channels in a BGR image.
+ */
+void muLuminanceGrayscale(Mat& input, Mat& output)
+{
+    for(int rows=0; rows<output.rows; rows++)
+        for(int cols=0; cols<output.cols; cols++)
+            output.at<uchar>(rows, cols) = (0.11*input.at<Vec3b>(rows, cols)[0])+
+                                           (0.59*input.at<Vec3b>(rows, cols)[1])+
+                                           (0.3*input.at<Vec3b>(rows, cols)[2]);
 }
