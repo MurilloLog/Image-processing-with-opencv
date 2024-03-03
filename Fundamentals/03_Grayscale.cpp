@@ -15,11 +15,12 @@
 using namespace std;
 using namespace cv;
 
-void muGetImageData(Mat& input);
-void muCreateImage8UC1(Mat& input, Mat& output);
-void muIntensityGrayscale(Mat& input, Mat& output);
-void muLuminanceGrayscale(Mat& input, Mat& output);
-void muValueGrayscale(Mat& input, Mat& output);
+void muGetImageData(const Mat& input);
+void muCreateImage8UC1(const Mat& input, Mat& output);
+void muIntensityGrayscale(const Mat& input, Mat& output);
+void muLuminanceGrayscale(const Mat& input, Mat& output);
+void muValueGrayscale(const Mat& input, Mat& output);
+void muValue2Grayscale(const Mat& input, Mat& output);
 
 int main(void)
 {
@@ -56,13 +57,18 @@ int main(void)
     imshow("Value algorithm", Output);
     muGetImageData(Output);
 
+    // Applying grayscale using the Value2 algorithm
+    muValue2Grayscale(Input, Output);
+    imshow("Value2 algorithm", Output);
+    muGetImageData(Output);
+
     waitKey(0);
     return true;
 }
 
 
 // Function to get columns, rows, channels and type from an image
-void muGetImageData(Mat &input)
+void muGetImageData(const Mat &input)
 {
     // Checking if input has data
     if(input.empty())
@@ -92,13 +98,13 @@ void muGetImageData(Mat &input)
 /* Create Image
  * Function to create a single-channel image from an input image size.
  */
-void muCreateImage8UC1(Mat& input, Mat& output) { output.Mat::create(input.rows, input.cols, CV_8UC1); }
+void muCreateImage8UC1(const Mat& input, Mat& output) { output.Mat::create(input.rows, input.cols, CV_8UC1); }
 
 
 /* INTENSITY: Color to Grayscale Algorithm
  * Function to apply grayscale by calculating the intensity (mean value) of all channels in a BGR image.
  */
-void muIntensityGrayscale(Mat& input, Mat& output)
+void muIntensityGrayscale(const Mat& input, Mat& output)
 {
     for(int rows=0; rows<output.rows; rows++)
         for(int cols=0; cols<output.cols; cols++)
@@ -114,7 +120,7 @@ void muIntensityGrayscale(Mat& input, Mat& output)
 /* LUMINANCE: Color to Grayscale Algorithm
  * Function to apply grayscale by calculating the luminance (0.3R+0.59G+0.11B) of all channels in a BGR image.
  */
-void muLuminanceGrayscale(Mat& input, Mat& output)
+void muLuminanceGrayscale(const Mat& input, Mat& output)
 {
     for(int rows=0; rows<output.rows; rows++)
         for(int cols=0; cols<output.cols; cols++)
@@ -127,7 +133,7 @@ void muLuminanceGrayscale(Mat& input, Mat& output)
 /* VALUE: Color to Grayscale Algorithm
  * Function to apply grayscale by calculating the maximum RGB of all channels.
  */
-void muValueGrayscale(Mat& input, Mat& output)
+void muValueGrayscale(const Mat& input, Mat& output)
 {
     for(int rows=0; rows<input.rows; rows++)
         for(int cols=0; cols<input.cols; cols++)
@@ -137,5 +143,21 @@ void muValueGrayscale(Mat& input, Mat& output)
                 if(input.at<Vec3b>(rows, cols)[channel] > maximum)
                     maximum = input.at<Vec3b>(rows, cols)[channel];
             output.at<uchar>(rows, cols) = maximum;
+        }
+}
+
+/* VALUE2: Color to Grayscale Algorithm
+ * Function to apply grayscale by calculating the minimum RGB of all channels.
+ */
+void muValue2Grayscale(const Mat& input, Mat& output)
+{
+    for(int rows=0; rows<input.rows; rows++)
+        for(int cols=0; cols<input.cols; cols++)
+        {
+            int minimum = 255;
+            for(int channel=0; channel<input.channels(); channel++)
+                if(input.at<Vec3b>(rows, cols)[channel] < minimum)
+                    minimum = input.at<Vec3b>(rows, cols)[channel];
+            output.at<uchar>(rows, cols) = minimum;
         }
 }
