@@ -22,6 +22,7 @@ void muLuminanceGrayscale(const Mat& input, Mat& output);
 void muValueGrayscale(const Mat& input, Mat& output);
 void muValue2Grayscale(const Mat& input, Mat& output);
 void muLusterGrayscale(const Mat& input, Mat& output);
+void muMedianGrayscale(const Mat& input, Mat& output);
 void bubbleSort(int arr[], int n);
 
 int main(void)
@@ -67,6 +68,11 @@ int main(void)
     // Applying grayscale using the Luster algorithm
     muLusterGrayscale(Input, Output);
     imshow("Luster algorithm", Output);
+    muGetImageData(Output);
+
+    // Applying grayscale using the Median algorithm
+    muMedianGrayscale(Input, Output);
+    imshow("Median algorithm", Output);
     muGetImageData(Output);
 
     waitKey(0);
@@ -184,6 +190,23 @@ void muLusterGrayscale(const Mat& input, Mat& output)
             bubbleSort(pixels, n);
 
             output.at<uchar>(rows, cols) = (pixels[0] + pixels[n-1])/2;
+        }
+}
+
+
+/* MEDIAN: Color to Grayscale Algorithm
+ * Function to apply grayscale by calculating the median of all channels.
+ */
+void muMedianGrayscale(const Mat& input, Mat& output)
+{
+    for(int rows=0; rows<input.rows; rows++)
+        for(int cols=0; cols<input.cols; cols++)
+        {
+            int pixels[] = {input.at<Vec3b>(rows, cols)[0], input.at<Vec3b>(rows, cols)[1], input.at<Vec3b>(rows, cols)[2]};
+            int n = sizeof(pixels)/sizeof(pixels[0]);
+            bubbleSort(pixels, n);
+
+            output.at<uchar>(rows, cols) = pixels[1];
         }
 }
 
