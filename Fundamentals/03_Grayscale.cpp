@@ -21,6 +21,8 @@ void muIntensityGrayscale(const Mat& input, Mat& output);
 void muLuminanceGrayscale(const Mat& input, Mat& output);
 void muValueGrayscale(const Mat& input, Mat& output);
 void muValue2Grayscale(const Mat& input, Mat& output);
+void muLusterGrayscale(const Mat& input, Mat& output);
+void bubbleSort(int arr[], int n);
 
 int main(void)
 {
@@ -60,6 +62,11 @@ int main(void)
     // Applying grayscale using the Value2 algorithm
     muValue2Grayscale(Input, Output);
     imshow("Value2 algorithm", Output);
+    muGetImageData(Output);
+
+    // Applying grayscale using the Luster algorithm
+    muLusterGrayscale(Input, Output);
+    imshow("Luster algorithm", Output);
     muGetImageData(Output);
 
     waitKey(0);
@@ -146,6 +153,7 @@ void muValueGrayscale(const Mat& input, Mat& output)
         }
 }
 
+
 /* VALUE2: Color to Grayscale Algorithm
  * Function to apply grayscale by calculating the minimum RGB of all channels.
  */
@@ -160,4 +168,38 @@ void muValue2Grayscale(const Mat& input, Mat& output)
                     minimum = input.at<Vec3b>(rows, cols)[channel];
             output.at<uchar>(rows, cols) = minimum;
         }
+}
+
+
+/* LUSTER: Color to Grayscale Algorithm
+ * Function to apply grayscale by calculating the mean of the minimum + maximum RGB of all channels.
+ */
+void muLusterGrayscale(const Mat& input, Mat& output)
+{
+    for(int rows=0; rows<input.rows; rows++)
+        for(int cols=0; cols<input.cols; cols++)
+        {
+            int pixels[] = {input.at<Vec3b>(rows, cols)[0], input.at<Vec3b>(rows, cols)[1], input.at<Vec3b>(rows, cols)[2]};
+            int n = sizeof(pixels)/sizeof(pixels[0]);
+            bubbleSort(pixels, n);
+
+            output.at<uchar>(rows, cols) = (pixels[0] + pixels[n-1])/2;
+        }
+}
+
+
+void bubbleSort(int arr[], int n)
+{
+    for(int i=0; i<n-1; i++)
+    {
+        for (int j=0; j<n-i-1; j++)
+        {
+            if (arr[j] > arr[j+1])
+            {
+                int temp = arr[j];
+                arr[j] = arr[j+1];
+                arr[j+1] = temp;
+            }
+        }
+    }
 }
