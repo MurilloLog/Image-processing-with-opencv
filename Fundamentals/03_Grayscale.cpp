@@ -19,6 +19,7 @@ void muGetImageData(Mat& input);
 void muCreateImage8UC1(Mat& input, Mat& output);
 void muIntensityGrayscale(Mat& input, Mat& output);
 void muLuminanceGrayscale(Mat& input, Mat& output);
+void muValueGrayscale(Mat& input, Mat& output);
 
 int main(void)
 {
@@ -48,6 +49,11 @@ int main(void)
     // Applying grayscale using the Luminance algorithm
     muLuminanceGrayscale(Input, Output);
     imshow("Luminance algorithm", Output);
+    muGetImageData(Output);
+
+    // Applying grayscale using the Value algorithm
+    muValueGrayscale(Input, Output);
+    imshow("Value algorithm", Output);
     muGetImageData(Output);
 
     waitKey(0);
@@ -115,4 +121,21 @@ void muLuminanceGrayscale(Mat& input, Mat& output)
             output.at<uchar>(rows, cols) = (0.11*input.at<Vec3b>(rows, cols)[0])+
                                            (0.59*input.at<Vec3b>(rows, cols)[1])+
                                            (0.3*input.at<Vec3b>(rows, cols)[2]);
+}
+
+
+/* VALUE: Color to Grayscale Algorithm
+ * Function to apply grayscale by calculating the maximum RGB of all channels.
+ */
+void muValueGrayscale(Mat& input, Mat& output)
+{
+    for(int rows=0; rows<input.rows; rows++)
+        for(int cols=0; cols<input.cols; cols++)
+        {
+            int maximum = 0;
+            for(int channel=0; channel<input.channels(); channel++)
+                if(input.at<Vec3b>(rows, cols)[channel] > maximum)
+                    maximum = input.at<Vec3b>(rows, cols)[channel];
+            output.at<uchar>(rows, cols) = maximum;
+        }
 }
