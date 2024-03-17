@@ -7,14 +7,65 @@
 using namespace std;
 using namespace cv;
 
+/* Classes definition */
+class muFigure
+{
+    private:
+        int wide;
+        int high;
+        int perimeter;
+        int area;
+        int xCentroid;
+        int yCentroid;
+        int xIniBoundingBox;
+        int yIniBoundingBox;
+    public:
+        muFigure() : wide(0), high(0), perimeter(0), area(0), xCentroid(0), yCentroid(0), xIniBoundingBox(0), yIniBoundingBox(0) {}
+        muFigure(int w, int h, int p, int a, int xC, int yC, int xBB, int yBB) : wide(w), high(h), perimeter(p), area(a), xCentroid(xC), yCentroid(yC), xIniBoundingBox(xBB), yIniBoundingBox(yBB) {}
+
+        // Setters
+        void setWide(int w) { wide = w; }
+        void setHigh(int h) { high = h; }
+        void setPerimeter(int p) { perimeter = p; }
+        void setArea(int a) { area = a; }
+        void setXCentroid(int xC) { xCentroid = xC; }
+        void setYCentroid(int yC) { yCentroid = yC; }
+        void setXIniBoundingBox(int xBB) { xIniBoundingBox = xBB; }
+        void setYIniBoundingBox(int yBB) { yIniBoundingBox = yBB; }
+
+        // Getters
+        int getWide() const { return wide; }
+        int getHigh() const { return high; }
+        int getPerimeter() const { return perimeter; }
+        int getArea() const { return area; }
+        int getXCentroid() const { return xCentroid; }
+        int getYCentroid() const { return yCentroid; }
+        int getXIniBoundingBox() const { return xIniBoundingBox; }
+        int getYIniBoundingBox() const { return yIniBoundingBox; }
+
+        void getData() const
+        {
+            std::cout << "Wide: " << wide << std::endl;
+            std::cout << "High: " << high << std::endl;
+            std::cout << "Perimeter: " << perimeter << std::endl;
+            std::cout << "Area: " << area << std::endl;
+            std::cout << "X Centroid: " << xCentroid << std::endl;
+            std::cout << "Y Centroid: " << yCentroid << std::endl;
+            std::cout << "X Initial Bounding Box: " << xIniBoundingBox << std::endl;
+            std::cout << "Y Initial Bounding Box: " << yIniBoundingBox << std::endl;
+        }
+};
+
 void muGetImageData(Mat &imgSource);
-void muGetContour(Mat &Input);
+void muGetContour(Mat &Input, muFigure &Fig);
 void FindNextPixelContour(int dir, int i, int j, Mat& Input, int& Inew, int& Jnew, int &dirA);
 int PreviousDir(int ia, int ja, int in, int jn);
 
 int main(void)
 {
     Mat Input;
+    muFigure Figure;
+
     string source = "lightning.bmp";
 //  string source = "cloud.bmp";
 //  string source = "star.bmp";
@@ -28,7 +79,10 @@ int main(void)
         return false;
     }
 
-    muGetContour(Input);
+    muGetContour(Input, Figure);
+
+    // Showing figure data
+    Figure.getData();
 
     // Saving image
     imshow("Contour", Input);
@@ -39,10 +93,11 @@ int main(void)
 
 
 // Function to get pixel contour
-void muGetContour(Mat &Input)
+void muGetContour(Mat &Input, muFigure &Fig)
 {
     //  Initial variables
     int dirA, high, wide, Rini_i, Rini_j, Rfin_i, Rfin_j;
+    int perimeter = 0;
 
     // Initial Pixel Identification
     float r, g, b;
@@ -74,9 +129,10 @@ void muGetContour(Mat &Input)
         Iact = Inew;
         Jact = Jnew;
         dir = dirA;
-        // perimetro++;
+        perimeter++;
     }
     while(!((Is == Inew)&&(Js == Jnew)));
+    Fig.setPerimeter(perimeter);
 }
 
 
