@@ -148,6 +148,7 @@ void muGetContour(Mat &Input, muFigure &Fig)
     // Bounding box
     int ymin, ymax, xmin, xmax;
     int rini_i, rini_j, rfin_i, rfin_j;
+    int cx, cy;
     xmax = 0;
     xmin = Input.cols;
     ymax = 0;
@@ -192,11 +193,19 @@ void muGetContour(Mat &Input, muFigure &Fig)
         Input.at<Vec3b>(i,rfin_j)[2] = 255;
     }
 
+    // Centroid
+    cx = (rfin_j - rini_j)/2 + rini_j;
+	cy = (rfin_i - rini_i)/2 + rini_i;
+	Input.at<Vec3b>(cy,cx)[0] = 0;
+	Input.at<Vec3b>(cy,cx)[1] = 0;
+    Input.at<Vec3b>(cy,cx)[2] = 255;
 
     Fig.setPerimeter(perimeter);
     Fig.setArea(area);
     Fig.setXIniBoundingBox(rini_j);
     Fig.setYIniBoundingBox(rini_i);
+    Fig.setXCentroid(cx);
+    Fig.setYCentroid(cy);
 
 }
 
