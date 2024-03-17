@@ -145,8 +145,59 @@ void muGetContour(Mat &Input, muFigure &Fig)
             }
         }
 
+    // Bounding box
+    int ymin, ymax, xmin, xmax;
+    int rini_i, rini_j, rfin_i, rfin_j;
+    xmax = 0;
+    xmin = Input.cols;
+    ymax = 0;
+    ymin = Input.rows;
+
+    for(int i = 0; i < Input.rows ; i++)
+        for(int j = 0; j < Input.cols; j++)
+        {
+            r = (float)Input.at<Vec3b>(i,j)[0];
+            if(r == 0)
+            {
+                if(i < ymin) ymin = i;
+                if(i > ymax) ymax = i;
+                if(j < xmin) xmin = j;
+                if(j > xmax) xmax = j;
+            }
+        }
+    Fig.setHigh(ymax - ymin);
+    Fig.setWide(xmax - xmin);
+
+    rini_i = ymin;
+    rini_j = xmin;
+    rfin_i = ymax;
+    rfin_j = xmax;
+
+    for(int j = rini_j; j < rfin_j; j++)
+    {
+        Input.at<Vec3b>(rini_i,j)[0] = 0;
+        Input.at<Vec3b>(rini_i,j)[1] = 0;
+        Input.at<Vec3b>(rini_i,j)[2] = 255;
+        Input.at<Vec3b>(rfin_i,j)[0] = 0;
+        Input.at<Vec3b>(rfin_i,j)[1] = 0;
+        Input.at<Vec3b>(rfin_i,j)[2] = 255;
+    }
+    for(int i = rini_i; i < rfin_i; i++)
+    {
+        Input.at<Vec3b>(i,rini_j)[0] = 0;
+        Input.at<Vec3b>(i,rini_j)[1] = 0;
+        Input.at<Vec3b>(i,rini_j)[2] = 255;
+        Input.at<Vec3b>(i,rfin_j)[0] = 0;
+        Input.at<Vec3b>(i,rfin_j)[1] = 0;
+        Input.at<Vec3b>(i,rfin_j)[2] = 255;
+    }
+
+
     Fig.setPerimeter(perimeter);
     Fig.setArea(area);
+    Fig.setXIniBoundingBox(rini_j);
+    Fig.setYIniBoundingBox(rini_i);
+
 }
 
 
