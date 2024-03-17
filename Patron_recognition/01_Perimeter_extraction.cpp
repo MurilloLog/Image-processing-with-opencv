@@ -98,6 +98,7 @@ void muGetContour(Mat &Input, muFigure &Fig)
     //  Initial variables
     int dirA, high, wide, Rini_i, Rini_j, Rfin_i, Rfin_j;
     int perimeter = 0;
+    int area = 0;
 
     // Initial Pixel Identification
     float r, g, b;
@@ -132,7 +133,20 @@ void muGetContour(Mat &Input, muFigure &Fig)
         perimeter++;
     }
     while(!((Is == Inew)&&(Js == Jnew)));
+
+    // Area
+    for(int i=0; i<Input.rows; i++)
+        for(int j=0; j<Input.cols; j++)
+        {
+            r = (float)Input.at<Vec3b>(i,j)[0];
+            if(r==0)
+            {
+                area++;
+            }
+        }
+
     Fig.setPerimeter(perimeter);
+    Fig.setArea(area);
 }
 
 
