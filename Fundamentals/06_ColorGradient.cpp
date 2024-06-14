@@ -17,6 +17,9 @@ using namespace cv;
 void channelColumnGradient(Mat& src, int channel);
 void channelRowGradient(Mat& src, int channel);
 void channelDiagonalGradient(Mat& src, int channel);
+void grColumnGradient(Mat& src, int blue);
+void bgColumnGradient(Mat& src, int red);
+void brColumnGradient(Mat& src, int green);
 
 int main(void)
 {
@@ -55,14 +58,35 @@ int main(void)
 //    imshow("Row Red Gradient", redPad);
 
     // 1-channel Diagonal Gradient
-    channelDiagonalGradient(bluePad, 0);
-    channelDiagonalGradient(greenPad, 1);
-    channelDiagonalGradient(redPad, 2);
-    imshow("Diagonal Blue Gradient", bluePad);
-    imshow("Diagonal Green Gradient", greenPad);
-    imshow("Diagonal Red Gradient", redPad);
+//    channelDiagonalGradient(bluePad, 0);
+//    channelDiagonalGradient(greenPad, 1);
+//    channelDiagonalGradient(redPad, 2);
+//    imshow("Diagonal Blue Gradient", bluePad);
+//    imshow("Diagonal Green Gradient", greenPad);
+//    imshow("Diagonal Red Gradient", redPad);
 
-//    imwrite("diagonalBluePad.png", bluePad);
+    // Green-Red Gradient
+//    channelDiagonalGradient(bluePad, 0);
+//    channelDiagonalGradient(greenPad, 1);
+//    channelDiagonalGradient(redPad, 2);
+//    imshow("Diagonal Blue Gradient", bluePad);
+//    imshow("Diagonal Green Gradient", greenPad);
+//    imshow("Diagonal Red Gradient", redPad);
+
+    // Green-Red Gradient
+//    grColumnGradient(colorPad, 0);
+//    imshow("Green-Red Gradient", colorPad);
+
+
+    // Blue-Green Gradient
+//    bgColumnGradient(colorPad, 0);
+//    imshow("Blue-Green Gradient", colorPad);
+
+    // Blue-Red Gradient
+    brColumnGradient(colorPad, 0);
+    imshow("Blue-Red Gradient", colorPad);
+
+    imwrite("blueRedPad.png", colorPad);
 //    imwrite("diagonalGreenPad.png", greenPad);
 //    imwrite("diagonalRedPad.png", redPad);
 
@@ -232,4 +256,79 @@ void channelDiagonalGradient(Mat& src, int channel)
         default:
             cout << "Not defined..." << endl;
     }
+}
+
+
+void grColumnGradient(Mat& src, int blue)
+{
+    /** \brief Generates a column gradient on the plane Green-Red of an image
+      * \param src: Image input
+      * \param blue: Color value for channel blue
+    **/
+
+    if(src.empty()) { cout<<"Source empty"<<endl;}
+
+
+    for(int row=0; row < src.rows; row++)
+    {
+        for(int col=0; col < src.cols; col++)
+        {
+            uchar gValue = (uchar)(255 * col / src.cols);
+            uchar rValue = (uchar)(255 * col / src.cols);
+            src.at<Vec3b>(row,col)[0] = blue;
+            src.at<Vec3b>(row,col)[1] = gValue;
+            src.at<Vec3b>(row,col)[2] = rValue;
+        }
+    }
+
+}
+
+
+void bgColumnGradient(Mat& src, int red)
+{
+    /** \brief Generates a column gradient on the plane Green-Red of an image
+      * \param src: Image input
+      * \param blue: Color value for channel blue
+    **/
+
+    if(src.empty()) { cout<<"Source empty"<<endl;}
+
+
+    for(int row=0; row < src.rows; row++)
+    {
+        for(int col=0; col < src.cols; col++)
+        {
+            uchar bValue = (uchar)(255 * col / src.cols);
+            uchar gValue = (uchar)(255 * col / src.cols);
+            src.at<Vec3b>(row,col)[0] = bValue;
+            src.at<Vec3b>(row,col)[1] = gValue;
+            src.at<Vec3b>(row,col)[2] = red;
+        }
+    }
+
+}
+
+
+void brColumnGradient(Mat& src, int green)
+{
+    /** \brief Generates a column gradient on the plane Green-Red of an image
+      * \param src: Image input
+      * \param blue: Color value for channel blue
+    **/
+
+    if(src.empty()) { cout<<"Source empty"<<endl;}
+
+
+    for(int row=0; row < src.rows; row++)
+    {
+        for(int col=0; col < src.cols; col++)
+        {
+            uchar bValue = (uchar)(255 * col / src.cols);
+            uchar rValue = (uchar)(255 * col / src.cols);
+            src.at<Vec3b>(row,col)[0] = bValue;
+            src.at<Vec3b>(row,col)[1] = green;
+            src.at<Vec3b>(row,col)[2] = rValue;
+        }
+    }
+
 }
