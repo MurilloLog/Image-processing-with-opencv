@@ -16,9 +16,7 @@ using namespace cv;
 
 void channelColumnGradient(Mat& src, int channel);
 void channelRowGradient(Mat& src, int channel);
-
-void fillGR(Mat& src);
-void eyeGradient(Mat& src);
+void channelDiagonalGradient(Mat& src, int channel);
 
 int main(void)
 {
@@ -49,16 +47,24 @@ int main(void)
 //    imshow("Column Red Gradient", redPad);
 
     // 1-channel Row Gradient
-    channelRowGradient(bluePad, 0);
-    channelRowGradient(greenPad, 1);
-    channelRowGradient(redPad, 2);
-    imshow("Row Blue Gradient", bluePad);
-    imshow("Row Green Gradient", greenPad);
-    imshow("Row Red Gradient", redPad);
+//    channelRowGradient(bluePad, 0);
+//    channelRowGradient(greenPad, 1);
+//    channelRowGradient(redPad, 2);
+//    imshow("Row Blue Gradient", bluePad);
+//    imshow("Row Green Gradient", greenPad);
+//    imshow("Row Red Gradient", redPad);
 
-    imwrite("rowBluePad.png", bluePad);
-    imwrite("rowGreenPad.png", greenPad);
-    imwrite("rowRedPad.png", redPad);
+    // 1-channel Diagonal Gradient
+    channelDiagonalGradient(bluePad, 0);
+    channelDiagonalGradient(greenPad, 1);
+    channelDiagonalGradient(redPad, 2);
+    imshow("Diagonal Blue Gradient", bluePad);
+    imshow("Diagonal Green Gradient", greenPad);
+    imshow("Diagonal Red Gradient", redPad);
+
+//    imwrite("diagonalBluePad.png", bluePad);
+//    imwrite("diagonalGreenPad.png", greenPad);
+//    imwrite("diagonalRedPad.png", redPad);
 
     waitKey(0);
     return 0;
@@ -171,59 +177,59 @@ void channelRowGradient(Mat& src, int channel)
 }
 
 
-void eyeGradient(Mat& src)
+void channelDiagonalGradient(Mat& src, int channel)
 {
-    if(src.empty()) { cout<<"Source empty"<<endl;}
+    /** \brief Generates a gradient across the diagonal of an image
+      * \param src: Image input
+      * \param channel: Color channel in BGR format
+    **/
 
-    // Longitud maxima en la diagonal
+    if(src.empty()) { cout << "Source empty" << endl; }
+
+    // Maximum length on the diagonal
     double max_dist = sqrt(pow(src.rows - 1, 2) + pow(src.cols - 1, 2));
-
-    if(src.channels()==1)
+    switch(channel)
     {
-        for(int row=0; row < src.rows; row++)
-            for(int col=0; col < src.cols; col++){
-                // Calcular la distancia del pixel actual al origen (0,0)
-                double dist = sqrt(pow(row, 2) + pow(col, 2));
-                // Mapear la distancia a una escala de 0 a 255
-                uchar value = (uchar)(255 * dist / max_dist);
-                src.at<uchar>(row,col) = value;
-            }
-    }
-
-    else if(src.channels()==3)
-    {
-        for(int row=0; row < src.rows; row++)
-            for(int col=0; col < src.cols; col++)
+        case 0:
+            for(int row=0; row < src.rows; row++)
             {
-                // Calcular la distancia del píxel actual al origen (0,0)
-                double dist = sqrt(pow(row, 2) + pow(col, 2));
-                // Mapear la distancia a una escala de 0 a 255
-                uchar value = (uchar)(255 * dist / max_dist);
-                // Asignar el valor de intensidad a los tres canales (BGR)
-                src.at<Vec3b>(row,col)[1] = value;
-                //src.at<Vec3b>(row,col)[2] = value;
-                //src.at<Vec3b>(row,col)[0] = 255;
+                for(int col=0; col < src.cols; col++)
+                {
+                    double dist = sqrt(pow(row, 2) + pow(col, 2));
+                    uchar bValue = (uchar)(255 * dist / max_dist);
+                    src.at<Vec3b>(row,col)[0] = bValue;
+                    src.at<Vec3b>(row,col)[1] = 0;
+                    src.at<Vec3b>(row,col)[2] = 0;
+                }
             }
+            break;
+        case 1:
+            for(int row=0; row < src.rows; row++)
+            {
+                for(int col=0; col < src.cols; col++)
+                {
+                    double dist = sqrt(pow(row, 2) + pow(col, 2));
+                    uchar gValue = (uchar)(255 * dist / max_dist);
+                    src.at<Vec3b>(row,col)[0] = 0;
+                    src.at<Vec3b>(row,col)[1] = gValue;
+                    src.at<Vec3b>(row,col)[2] = 0;
+                }
+            }
+            break;
+        case 2:
+            for(int row=0; row < src.rows; row++)
+            {
+                for(int col=0; col < src.cols; col++)
+                {
+                    double dist = sqrt(pow(row, 2) + pow(col, 2));
+                    uchar rValue = (uchar)(255 * dist / max_dist);
+                    src.at<Vec3b>(row,col)[0] = 0;
+                    src.at<Vec3b>(row,col)[1] = 0;
+                    src.at<Vec3b>(row,col)[2] = rValue;
+                }
+            }
+            break;
+        default:
+            cout << "Not defined..." << endl;
     }
 }
-
-void fillGR(Mat& src)
-{
-    if(src.empty()) { cout<<"Source empty"<<endl;}
-
-    // Filling
-    for(int row=0; row < src.rows; row++)
-    {
-        for(int col=0; col < src.cols; col++)
-        {
-            uchar gValue = (uchar)(255 * col / src.cols);
-            uchar rValue = (uchar)(255 * row / src.rows);
-            src.at<Vec3b>(row,col)[0] = gValue;
-//            src.at<Vec3b>(row,col)[1] = gValue;
-            src.at<Vec3b>(row,col)[2] = rValue;
-        }
-    }
-
-
-}
-
