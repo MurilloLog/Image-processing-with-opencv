@@ -15,6 +15,8 @@ using namespace std;
 using namespace cv;
 
 void channelColumnGradient(Mat& src, int channel);
+void channelRowGradient(Mat& src, int channel);
+
 void fillGR(Mat& src);
 void eyeGradient(Mat& src);
 
@@ -39,16 +41,24 @@ int main(void)
 //    imshow("Color Pad", colorPad);
 
     // 1-channel Column Gradient
-    channelColumnGradient(bluePad, 0);
-    channelColumnGradient(greenPad, 1);
-    channelColumnGradient(redPad, 2);
-    imshow("Column Blue Gradient", bluePad);
-    imshow("Column Green Gradient", greenPad);
-    imshow("Column Red Gradient", redPad);
+//    channelColumnGradient(bluePad, 0);
+//    channelColumnGradient(greenPad, 1);
+//    channelColumnGradient(redPad, 2);
+//    imshow("Column Blue Gradient", bluePad);
+//    imshow("Column Green Gradient", greenPad);
+//    imshow("Column Red Gradient", redPad);
 
-//    imwrite("bluepad.png", bluePad);
-//    imwrite("greenpad.png", greenPad);
-//    imwrite("redpad.png", redPad);
+    // 1-channel Row Gradient
+    channelRowGradient(bluePad, 0);
+    channelRowGradient(greenPad, 1);
+    channelRowGradient(redPad, 2);
+    imshow("Row Blue Gradient", bluePad);
+    imshow("Row Green Gradient", greenPad);
+    imshow("Row Red Gradient", redPad);
+
+    imwrite("rowBluePad.png", bluePad);
+    imwrite("rowGreenPad.png", greenPad);
+    imwrite("rowRedPad.png", redPad);
 
     waitKey(0);
     return 0;
@@ -96,6 +106,59 @@ void channelColumnGradient(Mat& src, int channel)
                 for(int col=0; col < src.cols; col++)
                 {
                     uchar rValue = (uchar)(255 * col / src.cols);
+                    src.at<Vec3b>(row,col)[0] = 0;
+                    src.at<Vec3b>(row,col)[1] = 0;
+                    src.at<Vec3b>(row,col)[2] = rValue;
+                }
+            }
+            break;
+        default:
+            cout << "Not defined..." << endl;
+    }
+}
+
+
+void channelRowGradient(Mat& src, int channel)
+{
+    /** \brief Generates a gradient across the rows of an image
+      * \param src: Image input
+      * \param channel: Color channel in BGR format
+    **/
+
+    if(src.empty()) { cout << "Source empty" << endl; }
+
+    switch(channel)
+    {
+        case 0:
+            for(int row=0; row < src.rows; row++)
+            {
+                for(int col=0; col < src.cols; col++)
+                {
+                    uchar bValue = (uchar)(255 * row / src.rows);
+                    src.at<Vec3b>(row,col)[0] = bValue;
+                    src.at<Vec3b>(row,col)[1] = 0;
+                    src.at<Vec3b>(row,col)[2] = 0;
+                }
+            }
+            break;
+        case 1:
+            for(int row=0; row < src.rows; row++)
+            {
+                for(int col=0; col < src.cols; col++)
+                {
+                    uchar gValue = (uchar)(255 * row / src.rows);
+                    src.at<Vec3b>(row,col)[0] = 0;
+                    src.at<Vec3b>(row,col)[1] = gValue;
+                    src.at<Vec3b>(row,col)[2] = 0;
+                }
+            }
+            break;
+        case 2:
+            for(int row=0; row < src.rows; row++)
+            {
+                for(int col=0; col < src.cols; col++)
+                {
+                    uchar rValue = (uchar)(255 * row / src.rows);
                     src.at<Vec3b>(row,col)[0] = 0;
                     src.at<Vec3b>(row,col)[1] = 0;
                     src.at<Vec3b>(row,col)[2] = rValue;
