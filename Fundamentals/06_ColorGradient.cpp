@@ -1,179 +1,166 @@
 /*
-    Imagenes con OpenCV
-    Autor: Gustavo Murillo
-    Fecha: Junio de 2024
+    BGR Color Pad
+    Author: Gustavo Murillo
+    Date: June 2024
 
-    Descripcion: Acceso a pixeles en datos Mat
+    Description: This program generates different types of gradients on a 1-channel and 3-channel image.
 */
 
 #include <iostream>
 #include <core.hpp>
 #include <highgui.hpp>
+#include <imgproc.hpp>
 
 using namespace std;
 using namespace cv;
 
-int ImgNegative(const Mat &src, Mat &out);
-int ImgNegative(Mat &src);
-int ImgNegativeUsingAt(const Mat& Mono, Mat& Neg3);
-int MatImage(void)
-{
-//
-//    // No es la mejor manera de manipular pixeles, pero es la mas rapida e intuitiva
-//    for(int r=0; r<Input.rows; r++)
-//        for(int c=0; c<Input.cols; c++)
-//        {
-//            Input.at<uchar>(r,c) = c;
-//        }
-//    imshow("Input", Input);
-//    //imwrite("Degraded.jpg", Input);
+void channelColumnGradient(Mat& src, int channel);
+void fillGR(Mat& src);
+void eyeGradient(Mat& src);
 
+int main(void)
+{
+    cout << "\n\t\t BGR Color Gradient \n";
+
+    int imgRows = 350;
+    int imgColumns = 350;
+    Mat bluePad  = Mat::zeros(imgRows, imgColumns, CV_8UC3);
+    Mat greenPad = Mat::zeros(imgRows, imgColumns, CV_8UC3);
+    Mat redPad   = Mat::zeros(imgRows, imgColumns, CV_8UC3);
+
+    Mat grayPad = Mat::zeros(imgRows, imgColumns, CV_8UC1);
+    Mat colorPad = Mat::zeros(imgRows, imgColumns, CV_8UC3);
+
+    //eyeGradient(grayPad);
+    //eyeGradient(colorPad);
+
+//    fillGR(colorPad);
+    //imshow("Gray Pad", grayPad);
+//    imshow("Color Pad", colorPad);
+
+    // 1-channel Column Gradient
+    channelColumnGradient(bluePad, 0);
+    channelColumnGradient(greenPad, 1);
+    channelColumnGradient(redPad, 2);
+    imshow("Column Blue Gradient", bluePad);
+    imshow("Column Green Gradient", greenPad);
+    imshow("Column Red Gradient", redPad);
+
+//    imwrite("bluepad.png", bluePad);
+//    imwrite("greenpad.png", greenPad);
+//    imwrite("redpad.png", redPad);
+
+    waitKey(0);
     return 0;
 }
 
-int pixelAccess_Test(void);
 
-int main(void) { pixelAccess_Test(); return 0; }
-
-int pixelAccess_Test()
+void channelColumnGradient(Mat& src, int channel)
 {
-    cout << "\n\t\tAcceso a pixeles \n";
-    string filename = "../images/lena_gray.bmp";
-
-    Mat Mono;
-    Mono = imread(filename, IMREAD_GRAYSCALE);
-    if (Mono.empty()) { cout << "\nInput file not found." << endl; return -1;}
-    imshow("Mono", Mono);
-
-//    // Negativo de una imagen
-//    Mat Neg1;
-//    // ¿Que recibo si accedo a los datos de Neg1?
-//    ImgNegative(Mono, Neg1);
-//    imshow("Negativo Monocromatico", Neg1);
-//
-//    // Negativo de una imagen sobre la misma imagen
-//    ImgNegative(Neg1);
-//    imshow("Negativo Monocromatico 2", Neg1);
-//
-//    // Negativo de una imagen a color
-//    Mat Neg2;
-    string filenameColor = "../images/color.jpg";
-    Mat Color;
-    Color = imread(filenameColor, IMREAD_COLOR);
-//    ImgNegative(Color, Neg2);
-//    imshow("Negativo color", Neg2);
-
-    // Negativo de una imagen usando At
-    Mat Neg3;
-    ImgNegativeUsingAt(Mono, Neg3);
-    imshow("Negativo Monocromatico usando At", Neg3);
-
-    // Negativo de una imagen a color usando At
-    Mat Color4;
-    ImgNegativeUsingAt(Color, Color4);
-    imshow("Negativo Monocromatico en color usando At", Color4);
-
-    waitKey(0);
-}
-
-int ImgNegative(const Mat &src, Mat &out)
-{
-    /** \brief El negativo de una imagen de entrada usando
-      * \param src: Imagen de entrada
-      * \param out: Imagen modificada
-      * \return out
+    /** \brief Generates a gradient across the columns of an image
+      * \param src: Image input
+      * \param channel: Color channel in BGR format
     **/
 
-    if(src.empty())
-    {
-        cout << "Imagen vacia" << endl; return -1;
-    }
-    if(out.empty())
-        out = src.clone();
-    else{
-        cout << "Imagen de salida no vacia" << endl; return -1;
-    }
+    if(src.empty()) { cout << "Source empty" << endl; }
 
-    if(out.channels()==1)
-       out = 255-out;
-    else if(out.channels()==3)
-        out = Scalar(255, 255, 255) - out;
+    switch(channel)
+    {
+        case 0:
+            for(int row=0; row < src.rows; row++)
+            {
+                for(int col=0; col < src.cols; col++)
+                {
+                    uchar bValue = (uchar)(255 * col / src.cols);
+                    src.at<Vec3b>(row,col)[0] = bValue;
+                    src.at<Vec3b>(row,col)[1] = 0;
+                    src.at<Vec3b>(row,col)[2] = 0;
+                }
+            }
+            break;
+        case 1:
+            for(int row=0; row < src.rows; row++)
+            {
+                for(int col=0; col < src.cols; col++)
+                {
+                    uchar gValue = (uchar)(255 * col / src.cols);
+                    src.at<Vec3b>(row,col)[0] = 0;
+                    src.at<Vec3b>(row,col)[1] = gValue;
+                    src.at<Vec3b>(row,col)[2] = 0;
+                }
+            }
+            break;
+        case 2:
+            for(int row=0; row < src.rows; row++)
+            {
+                for(int col=0; col < src.cols; col++)
+                {
+                    uchar rValue = (uchar)(255 * col / src.cols);
+                    src.at<Vec3b>(row,col)[0] = 0;
+                    src.at<Vec3b>(row,col)[1] = 0;
+                    src.at<Vec3b>(row,col)[2] = rValue;
+                }
+            }
+            break;
+        default:
+            cout << "Not defined..." << endl;
+    }
 }
 
-int ImgNegative(Mat &src)
-{
-    /** \brief El negativo de una imagen de entrada usando
-      * \param src: Imagen de entrada
-      * \param out: Imagen modificada
-      * \return out
-    **/
 
-    if(src.empty())
-    {
-        cout << "Imagen vacia" << endl; return -1;
-    }
+void eyeGradient(Mat& src)
+{
+    if(src.empty()) { cout<<"Source empty"<<endl;}
+
+    // Longitud maxima en la diagonal
+    double max_dist = sqrt(pow(src.rows - 1, 2) + pow(src.cols - 1, 2));
+
     if(src.channels()==1)
-       src = 255-src;
+    {
+        for(int row=0; row < src.rows; row++)
+            for(int col=0; col < src.cols; col++){
+                // Calcular la distancia del pixel actual al origen (0,0)
+                double dist = sqrt(pow(row, 2) + pow(col, 2));
+                // Mapear la distancia a una escala de 0 a 255
+                uchar value = (uchar)(255 * dist / max_dist);
+                src.at<uchar>(row,col) = value;
+            }
+    }
+
     else if(src.channels()==3)
-        src = Scalar(255, 255, 255) - src;
+    {
+        for(int row=0; row < src.rows; row++)
+            for(int col=0; col < src.cols; col++)
+            {
+                // Calcular la distancia del píxel actual al origen (0,0)
+                double dist = sqrt(pow(row, 2) + pow(col, 2));
+                // Mapear la distancia a una escala de 0 a 255
+                uchar value = (uchar)(255 * dist / max_dist);
+                // Asignar el valor de intensidad a los tres canales (BGR)
+                src.at<Vec3b>(row,col)[1] = value;
+                //src.at<Vec3b>(row,col)[2] = value;
+                //src.at<Vec3b>(row,col)[0] = 255;
+            }
+    }
 }
 
-int ImgNegativeUsingAt(const Mat &src, Mat &out)
+void fillGR(Mat& src)
 {
-    /** \brief El negativo de una imagen de entrada usando
-      * \param src: Imagen de entrada
-      * \param out: Imagen modificada
-      * \return out
-    **/
+    if(src.empty()) { cout<<"Source empty"<<endl;}
 
-    if(src.empty())
+    // Filling
+    for(int row=0; row < src.rows; row++)
     {
-        cout << "Imagen vacia" << endl; return -1;
+        for(int col=0; col < src.cols; col++)
+        {
+            uchar gValue = (uchar)(255 * col / src.cols);
+            uchar rValue = (uchar)(255 * row / src.rows);
+            src.at<Vec3b>(row,col)[0] = gValue;
+//            src.at<Vec3b>(row,col)[1] = gValue;
+            src.at<Vec3b>(row,col)[2] = rValue;
+        }
     }
-    if(out.empty())
-        out = src.clone();
-    else{
-        cout << "Imagen de salida no vacia" << endl; return -1;
-    }
 
 
-    switch(src.type())
-    {
-        case CV_8UC1:
-            for(int r=0; r<src.rows; r++)
-                for(int c=0; c<src.cols; c++)
-                {
-                    out.at<uchar>(r,c) = 255 - src.at<uchar>(r, c);
-                }
-            break;
-
-        case CV_8UC3:
-            for(int r=0; r<src.rows; r++)
-                for(int c=0; c<src.cols; c++)
-                {
-                    out.at<Vec3b>(r,c)[0] = 255 - src.at<Vec3b>(r,c)[0];
-                    out.at<Vec3b>(r,c)[1] = 255 - src.at<Vec3b>(r,c)[1];
-                    out.at<Vec3b>(r,c)[2] = 255 - src.at<Vec3b>(r,c)[2];
-                }
-            break;
-
-        case CV_32FC1:
-            for(int r=0; r<src.rows; r++)
-                for(int c=0; c<src.cols; c++)
-                {
-                    out.at<float>(r,c) = 255 - src.at<float>(r, c);
-                }
-            break;
-
-        case CV_32FC3:
-            for(int r=0; r<src.rows; r++)
-                for(int c=0; c<src.cols; c++)
-                    for(int ch=0; ch<src.channels(); ch++)
-                    {
-                        out.at<Vec3b>(r,c)[ch] = 255.0 - src.at<Vec3b>(r,c)[ch];
-                    }
-            break;
-
-        default: cout << src.type() << ".\n";
-    }
 }
+
