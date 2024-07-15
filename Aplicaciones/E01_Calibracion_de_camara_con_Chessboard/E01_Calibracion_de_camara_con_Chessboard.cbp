@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Calibracion_de_camara_con_Chessboard" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/T01_ColorPad" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-std=c++11" />
+					<Add option="-g" />
+					<Add directory="C:/opencv/build/install/include" />
+					<Add directory="C:/opencv/build/install/include/opencv2" />
+				</Compiler>
+				<Linker>
+					<Add library="C:/opencv/build/install/x64/mingw/lib/libopencv_calib3d4100.dll.a" />
+					<Add library="C:/opencv/build/install/x64/mingw/lib/libopencv_core4100.dll.a" />
+					<Add library="C:/opencv/build/install/x64/mingw/lib/libopencv_dnn4100.dll.a" />
+					<Add library="C:/opencv/build/install/x64/mingw/lib/libopencv_features2d4100.dll.a" />
+					<Add library="C:/opencv/build/install/x64/mingw/lib/libopencv_flann4100.dll.a" />
+					<Add library="C:/opencv/build/install/x64/mingw/lib/libopencv_gapi4100.dll.a" />
+					<Add library="C:/opencv/build/install/x64/mingw/lib/libopencv_highgui4100.dll.a" />
+					<Add library="C:/opencv/build/install/x64/mingw/lib/libopencv_imgcodecs4100.dll.a" />
+					<Add library="C:/opencv/build/install/x64/mingw/lib/libopencv_imgproc4100.dll.a" />
+					<Add library="C:/opencv/build/install/x64/mingw/lib/libopencv_ml4100.dll.a" />
+					<Add library="C:/opencv/build/install/x64/mingw/lib/libopencv_objdetect4100.dll.a" />
+					<Add library="C:/opencv/build/install/x64/mingw/lib/libopencv_photo4100.dll.a" />
+					<Add library="C:/opencv/build/install/x64/mingw/lib/libopencv_stitching4100.dll.a" />
+					<Add library="C:/opencv/build/install/x64/mingw/lib/libopencv_video4100.dll.a" />
+					<Add library="C:/opencv/build/install/x64/mingw/lib/libopencv_videoio4100.dll.a" />
+					<Add directory="C:/opencv/build/install/x64/mingw/lib" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/T01_ColorPad" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add directory="/usr/local/include/opencv4/" />
+			<Add directory="/usr/local/include/opencv4/opencv2" />
+		</Compiler>
+		<Unit filename="main.cpp" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>
